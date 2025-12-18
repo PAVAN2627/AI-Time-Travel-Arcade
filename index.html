@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Time-Travel Arcade</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <div class="header">
+            <h1 class="title">AI TIME-TRAVEL ARCADE</h1>
+            <div class="subtitle">🤖 RETRO REVIVAL WITH ADAPTIVE AI 🕹️</div>
+            <div class="stats">
+                <span id="score">SCORE: 0</span>
+                <span id="level">LEVEL: 1</span>
+                <span id="lives">LIVES: 3</span>
+                <span id="highScore">HIGH: 0</span>
+            </div>
+        </div>
+        
+        <div class="main-game">
+            <canvas id="gameCanvas" width="800" height="600"></canvas>
+            
+            <div class="ai-panel">
+                <h3>AI CONTROL CENTER</h3>
+                <div class="ai-status">
+                    <div class="ai-indicator">
+                        <span class="ai-dot"></span>
+                        <span>AI ACTIVE</span>
+                    </div>
+                    <div class="ai-stats">
+                        <div>Adaptations: <span id="adaptationCount">0</span></div>
+                        <div>Analysis: <span id="analysisTimer">--</span>s</div>
+                    </div>
+                </div>
+                
+                <div class="ai-explanation">
+                    <h4>🧠 AI BRAIN ACTIVITY:</h4>
+                    <p id="aiReason">Analyzing player behavior...</p>
+                    <div class="ai-activity">
+                        <div class="brain-wave"></div>
+                        <div class="brain-wave"></div>
+                        <div class="brain-wave"></div>
+                    </div>
+                </div>
+                
+                <div class="game-params">
+                    <div class="param">
+                        <span>SPEED:</span>
+                        <div class="param-bar">
+                            <div id="speedBar" class="param-fill"></div>
+                        </div>
+                    </div>
+                    <div class="param">
+                        <span>OBSTACLES:</span>
+                        <div class="param-bar">
+                            <div id="obstacleBar" class="param-fill"></div>
+                        </div>
+                    </div>
+                    <div class="param">
+                        <span>GRAVITY:</span>
+                        <div class="param-bar">
+                            <div id="gravityBar" class="param-fill"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <p class="desktop-controls">🎮 ARROW KEYS: MOVE • SPACEBAR: JUMP • 🟡 COLLECT YELLOW POINTS • 🔴 AVOID RED OBSTACLES</p>
+            <p class="mobile-controls">📱 TAP BUTTONS TO MOVE • 🟡 COLLECT YELLOW POINTS • 🔴 AVOID RED OBSTACLES</p>
+            
+            <!-- Mobile Controls -->
+            <div class="mobile-gamepad">
+                <div class="mobile-row">
+                    <button id="jumpBtn" class="mobile-btn jump-btn">JUMP</button>
+                </div>
+                <div class="mobile-row">
+                    <button id="leftBtn" class="mobile-btn">←</button>
+                    <button id="rightBtn" class="mobile-btn">→</button>
+                </div>
+            </div>
+            
+            <div class="game-buttons">
+                <button id="startBtn" class="retro-btn">START GAME</button>
+                <button id="pauseBtn" class="retro-btn">PAUSE</button>
+                <button id="aiDemoBtn" class="retro-btn">AI DEMO</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="game.js"></script>
+</body>
+</html>

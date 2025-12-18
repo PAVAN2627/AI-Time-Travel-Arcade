@@ -1,0 +1,18 @@
+{
+  "name": "ai-time-travel-arcade",
+  "version": "1.0.0",
+  "description": "Retro arcade game with AI-driven adaptive gameplay",
+  "main": "index.html",
+  "scripts": {
+    "dev": "netlify dev",
+    "build": "echo 'No build step required'",
+    "deploy": "netlify deploy --prod",
+    "start": "netlify dev"
+  },
+  "keywords": ["game", "ai", "retro", "arcade", "adaptive"],
+  "author": "AI Time-Travel Arcade Team",
+  "license": "MIT",
+  "devDependencies": {
+    "netlify-cli": "^17.0.0"
+  }
+}
