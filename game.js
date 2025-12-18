@@ -4,13 +4,13 @@ class AITimeArcade {
         this.ctx = this.canvas.getContext('2d');
         this.gameState = 'menu'; // menu, playing, paused, gameOver
         
-        // Default game parameters (never modified)
+        // Default game parameters (never modified) - Increased speed for better mobile experience
         this.defaultParams = {
-            speed: 1.5,
-            obstacleFrequency: 0.01,
-            gravity: 0.4,
-            jumpPower: 12,
-            controlSensitivity: 1
+            speed: 2.5, // Faster base speed
+            obstacleFrequency: 0.015, // More frequent but manageable
+            gravity: 0.5, // Slightly stronger gravity
+            jumpPower: 14, // Higher jump to compensate
+            controlSensitivity: 1.2 // More responsive controls
         };
         
         // Game parameters (AI will modify these) - Made much easier
@@ -163,6 +163,14 @@ class AITimeArcade {
                 this.showAIDemo();
             });
         }
+        
+        // Toggle AI panel button (mobile only)
+        const toggleAIBtn = document.getElementById('toggleAIBtn');
+        if (toggleAIBtn) {
+            toggleAIBtn.addEventListener('click', () => {
+                this.toggleAIPanel();
+            });
+        }
     }
     
     startGame() {
@@ -170,9 +178,14 @@ class AITimeArcade {
         this.resetGame();
         document.getElementById('startBtn').textContent = 'RESTART';
         
+        // Hide AI panel on mobile during gameplay for better view
+        if (window.innerWidth <= 768) {
+            document.querySelector('.ai-panel').style.display = 'none';
+        }
+        
         // Show initial AI message with tutorial
-        document.getElementById('aiReason').textContent = '🎮 TUTORIAL: Use ARROW KEYS to move, SPACEBAR to jump. Collect yellow points, avoid red obstacles!';
-        this.showAINotification('GAME_START', '🔄 Fresh start! All parameters reset to normal.');
+        document.getElementById('aiReason').textContent = '🎮 TUTORIAL: Use controls to move and jump. Collect yellow coins, avoid red enemies!';
+        this.showAINotification('GAME_START', '🔄 Game started! AI adapting to your play style.');
     }
     
     togglePause() {
@@ -261,13 +274,13 @@ class AITimeArcade {
     }
     
     updatePlayer(deltaTime) {
-        // Horizontal movement
+        // Horizontal movement - Faster for better mobile experience
         if (this.keys['ArrowLeft']) {
-            this.player.vx = -3 * this.gameParams.controlSensitivity;
+            this.player.vx = -4 * this.gameParams.controlSensitivity;
         } else if (this.keys['ArrowRight']) {
-            this.player.vx = 3 * this.gameParams.controlSensitivity;
+            this.player.vx = 4 * this.gameParams.controlSensitivity;
         } else {
-            this.player.vx *= 0.8; // Friction
+            this.player.vx *= 0.85; // Less friction for smoother movement
         }
         
         // Gravity
@@ -475,6 +488,11 @@ class AITimeArcade {
         document.getElementById('startBtn').textContent = 'START GAME';
         document.getElementById('pauseBtn').textContent = 'PAUSE';
         
+        // Show AI panel again on mobile
+        if (window.innerWidth <= 768) {
+            document.querySelector('.ai-panel').style.display = 'block';
+        }
+        
         // Check for high score
         if (this.score > this.highScore) {
             this.highScore = this.score;
@@ -486,7 +504,7 @@ class AITimeArcade {
         const finalSurvival = this.aiData.survivalTime / 1000;
         const finalErrorRate = this.aiData.errorCount / finalSurvival;
         document.getElementById('aiReason').textContent = 
-            `🎯 FINAL ANALYSIS: ${finalSurvival.toFixed(1)}s survival, ${this.aiData.adaptationHistory.length} AI adaptations made. ${this.score > this.highScore/2 ? 'Excellent performance!' : 'Keep practicing!'}`;
+            `🎯 FINAL ANALYSIS: ${finalSurvival.toFixed(1)}s survival, ${this.aiData.adaptationHistory.length} AI adaptations made. ${this.score > this.highScore/2 ? 'Great job!' : 'Try again!'}`;
     }
     
   
@@ -726,6 +744,19 @@ class AITimeArcade {
             }
         };
         showNext();
+    }
+    
+    toggleAIPanel() {
+        const aiPanel = document.querySelector('.ai-panel');
+        const toggleBtn = document.getElementById('toggleAIBtn');
+        
+        if (aiPanel.style.display === 'none') {
+            aiPanel.style.display = 'block';
+            toggleBtn.textContent = 'HIDE AI';
+        } else {
+            aiPanel.style.display = 'none';
+            toggleBtn.textContent = 'SHOW AI';
+        }
     }
     
     updateUI() {

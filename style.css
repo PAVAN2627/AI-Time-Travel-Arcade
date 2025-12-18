@@ -309,6 +309,16 @@ body {
     margin-top: 15px;
 }
 
+.mobile-only {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .mobile-only {
+        display: inline-block;
+    }
+}
+
 /* Mobile responsive */
 @media (max-width: 768px) {
     .desktop-controls {
@@ -324,21 +334,86 @@ body {
     }
     
     .title {
-        font-size: 1.5rem;
+        font-size: 1.2rem;
     }
     
     .subtitle {
-        font-size: 0.8rem;
+        font-size: 0.7rem;
     }
     
     .stats {
-        font-size: 0.9rem;
+        font-size: 0.8rem;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+    
+    .main-game {
+        flex-direction: column;
         gap: 10px;
     }
     
     #gameCanvas {
         width: 100%;
-        height: auto;
+        height: 300px;
+        max-width: 100%;
+    }
+    
+    .ai-panel {
+        width: 100%;
+        padding: 10px;
+        order: 2;
+    }
+    
+    .ai-panel h3 {
+        font-size: 0.9rem;
+        margin-bottom: 10px;
+    }
+    
+    .ai-explanation {
+        padding: 8px;
+        margin-bottom: 10px;
+    }
+    
+    .ai-explanation h4 {
+        font-size: 0.7rem;
+        margin-bottom: 5px;
+    }
+    
+    .ai-explanation p {
+        font-size: 0.8rem;
+        line-height: 1.2;
+    }
+    
+    .game-params {
+        gap: 8px;
+    }
+    
+    .param {
+        font-size: 0.7rem;
+    }
+    
+    .param span {
+        width: 60px;
+    }
+    
+    .param-bar {
+        width: 100px;
+        height: 6px;
+    }
+    
+    .mobile-btn {
+        padding: 12px 20px;
+        font-size: 1rem;
+    }
+    
+    .controls {
+        margin-top: 10px;
+        padding-top: 10px;
+    }
+    
+    .controls p {
+        font-size: 0.9rem;
+        margin-bottom: 10px;
     }
 }
 
