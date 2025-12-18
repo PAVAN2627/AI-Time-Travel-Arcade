@@ -4,14 +4,17 @@ class AITimeArcade {
         this.ctx = this.canvas.getContext('2d');
         this.gameState = 'menu'; // menu, playing, paused, gameOver
         
-        // Game parameters (AI will modify these) - Made much easier
-        this.gameParams = {
-            speed: 1.5, // Slower speed
-            obstacleFrequency: 0.01, // Fewer obstacles
-            gravity: 0.4, // Lighter gravity
-            jumpPower: 12, // Reasonable jump height
+        // Default game parameters (never modified)
+        this.defaultParams = {
+            speed: 1.5,
+            obstacleFrequency: 0.01,
+            gravity: 0.4,
+            jumpPower: 12,
             controlSensitivity: 1
         };
+        
+        // Game parameters (AI will modify these) - Made much easier
+        this.gameParams = { ...this.defaultParams };
         
         // Player object
         this.player = {
@@ -169,7 +172,7 @@ class AITimeArcade {
         
         // Show initial AI message with tutorial
         document.getElementById('aiReason').textContent = '🎮 TUTORIAL: Use ARROW KEYS to move, SPACEBAR to jump. Collect yellow points, avoid red obstacles!';
-        this.showAINotification('TUTORIAL', '🎯 Collect yellow points for score!');
+        this.showAINotification('GAME_START', '🔄 Fresh start! All parameters reset to normal.');
     }
     
     togglePause() {
@@ -183,20 +186,41 @@ class AITimeArcade {
     }
     
     resetGame() {
+        // Reset player
         this.player.x = 100;
         this.player.y = 400;
         this.player.vx = 0;
         this.player.vy = 0;
+        this.player.onGround = false;
+        
+        // Reset game objects
         this.obstacles = [];
         this.collectibles = [];
         this.particles = [];
+        
+        // Reset game stats
         this.score = 0;
         this.level = 1;
         this.lives = 3;
         this.gameTime = 0;
+        
+        // Reset AI data
         this.aiData.survivalTime = 0;
         this.aiData.errorCount = 0;
+        this.aiData.movementPatterns = [];
+        this.aiData.reactionTimes = [];
+        this.aiData.lastAnalysis = 0;
+        this.aiData.adaptationHistory = [];
+        
+        // IMPORTANT: Reset game parameters to default values
+        this.gameParams = { ...this.defaultParams };
+        
+        // Update UI
         this.updateUI();
+        this.updateParameterBars();
+        
+        console.log('🔄 Game reset - All parameters restored to defaults');
+        console.log('Jump Power:', this.gameParams.jumpPower, 'Gravity:', this.gameParams.gravity);
     }
     
     jump() {
@@ -490,12 +514,12 @@ class AITimeArcade {
             reason = `🛡️ HELPING HAND: Making it easier so you can enjoy the game!`;
             adaptation = 'DIFFICULTY_DOWN';
         }
-        // Rule 3: Less frequent gravity changes for variety
+        // Rule 3: Less frequent gravity changes for variety (reduced range to prevent extreme jumps)
         else if (survivalSeconds > 15 && Math.random() < 0.3) {
             const gravityModes = [
-                { value: 0.2, name: 'MOON GRAVITY', desc: '🌙 Moon gravity activated! Float like an astronaut.' },
-                { value: 0.8, name: 'HEAVY GRAVITY', desc: '⚡ Heavy gravity! Quick reflexes needed.' },
-                { value: 1.2, name: 'JUPITER MODE', desc: '🪐 Jupiter gravity! Maximum challenge.' }
+                { value: 0.35, name: 'LIGHT GRAVITY', desc: '🌙 Light gravity! Slightly floatier jumps.' },
+                { value: 0.6, name: 'HEAVY GRAVITY', desc: '⚡ Heavy gravity! Faster falling.' },
+                { value: 0.4, name: 'NORMAL GRAVITY', desc: '🎯 Gravity normalized.' }
             ];
             const mode = gravityModes[Math.floor(Math.random() * gravityModes.length)];
             this.gameParams.gravity = mode.value;
