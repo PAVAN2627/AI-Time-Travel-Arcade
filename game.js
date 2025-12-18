@@ -16,12 +16,12 @@ class AITimeArcade {
         // Game parameters (AI will modify these) - Made much easier
         this.gameParams = { ...this.defaultParams };
         
-        // Player object
+        // Player object (Mario-style character)
         this.player = {
             x: 100,
             y: 400,
-            width: 20,
-            height: 20,
+            width: 24,
+            height: 32,
             vx: 0,
             vy: 0,
             onGround: false,
@@ -349,13 +349,13 @@ class AITimeArcade {
     }
     
     spawnObjects() {
-        // Spawn obstacles - Made smaller and less frequent
+        // Spawn obstacles - Retro enemies
         if (Math.random() < this.gameParams.obstacleFrequency) {
             this.obstacles.push({
                 x: this.canvas.width,
-                y: this.canvas.height - 50 - 25, // Slightly shorter
-                width: 25, // Smaller width
-                height: 25, // Smaller height
+                y: this.canvas.height - 50 - 28,
+                width: 28,
+                height: 28,
                 color: '#ff0000'
             });
         }
@@ -369,8 +369,8 @@ class AITimeArcade {
             this.collectibles.push({
                 x: this.canvas.width,
                 y: collectibleY,
-                width: 18, // Slightly bigger
-                height: 18,
+                width: 20, // Coin size
+                height: 20,
                 color: '#ffff00',
                 rotation: 0
             });
@@ -740,12 +740,11 @@ class AITimeArcade {
         this.ctx.fillStyle = '#000';
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         
-        // Draw ground
-        this.ctx.fillStyle = '#00ff00';
-        this.ctx.fillRect(0, this.canvas.height - 50, this.canvas.width, 50);
+        // Draw retro ground/platform
+        this.drawGround();
         
-        // Draw grid background
-        this.drawGrid();
+        // Draw retro background
+        this.drawBackground();
         
         // Draw jump height indicator (subtle guide line)
         if (this.gameState === 'playing') {
@@ -769,65 +768,18 @@ class AITimeArcade {
         }
         this.ctx.globalAlpha = 1;
         
-        // Draw obstacles
+        // Draw obstacles (retro enemies/hazards)
         for (const obstacle of this.obstacles) {
-            this.ctx.fillStyle = obstacle.color;
-            this.ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
-            
-            // Pixel art effect
-            this.ctx.strokeStyle = '#ff6600';
-            this.ctx.lineWidth = 2;
-            this.ctx.strokeRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+            this.drawObstacle(obstacle);
         }
         
-        // Draw collectibles with glow effect
+        // Draw collectibles (coins/power-ups)
         for (const collectible of this.collectibles) {
-            this.ctx.save();
-            this.ctx.translate(collectible.x + collectible.width / 2, 
-                             collectible.y + collectible.height / 2);
-            this.ctx.rotate(collectible.rotation);
-            
-            // Glow effect
-            this.ctx.shadowColor = '#ffff00';
-            this.ctx.shadowBlur = 15;
-            this.ctx.fillStyle = collectible.color;
-            this.ctx.fillRect(-collectible.width / 2, -collectible.height / 2, 
-                            collectible.width, collectible.height);
-            
-            // Inner bright core
-            this.ctx.shadowBlur = 0;
-            this.ctx.fillStyle = '#ffffff';
-            this.ctx.fillRect(-collectible.width / 4, -collectible.height / 4, 
-                            collectible.width / 2, collectible.height / 2);
-            
-            this.ctx.restore();
+            this.drawCollectible(collectible);
         }
         
-        // Draw player with jump trail effect
-        if (!this.player.onGround) {
-            // Draw jump trail - more visible
-            this.ctx.fillStyle = 'rgba(0, 255, 255, 0.5)';
-            this.ctx.fillRect(this.player.x - 3, this.player.y + this.player.height, 
-                            this.player.width + 6, 2);
-            
-            // Draw jump arc indicator
-            this.ctx.strokeStyle = 'rgba(0, 255, 255, 0.3)';
-            this.ctx.lineWidth = 1;
-            this.ctx.beginPath();
-            this.ctx.arc(this.player.x + this.player.width/2, this.player.y + this.player.height/2, 
-                        25, 0, Math.PI * 2);
-            this.ctx.stroke();
-        }
-        
-        this.ctx.fillStyle = this.player.color;
-        this.ctx.fillRect(this.player.x, this.player.y, 
-                         this.player.width, this.player.height);
-        
-        // Player pixel art effect - brighter when jumping
-        this.ctx.strokeStyle = this.player.onGround ? '#00ffff' : '#ffffff';
-        this.ctx.lineWidth = this.player.onGround ? 2 : 3;
-        this.ctx.strokeRect(this.player.x, this.player.y, 
-                          this.player.width, this.player.height);
+        // Draw player character (Mario-style)
+        this.drawPlayer();
         
         // Draw game state messages
         if (this.gameState === 'menu') {
@@ -840,24 +792,101 @@ class AITimeArcade {
         }
     }
     
-    drawGrid() {
-        this.ctx.strokeStyle = 'rgba(0, 255, 0, 0.1)';
-        this.ctx.lineWidth = 1;
+    drawBackground() {
+        // Gradient sky
+        const gradient = this.ctx.createLinearGradient(0, 0, 0, this.canvas.height - 50);
+        gradient.addColorStop(0, '#001122');
+        gradient.addColorStop(1, '#003344');
+        this.ctx.fillStyle = gradient;
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height - 50);
         
-        // Vertical lines
+        // Stars in background
+        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+        for (let i = 0; i < 50; i++) {
+            const x = (i * 137) % this.canvas.width; // Pseudo-random positions
+            const y = (i * 211) % (this.canvas.height - 100);
+            const twinkle = Math.sin(this.gameTime / 200 + i) * 0.5 + 0.5;
+            this.ctx.globalAlpha = twinkle;
+            this.ctx.fillRect(x, y, 2, 2);
+        }
+        this.ctx.globalAlpha = 1;
+        
+        // Distant mountains/buildings
+        this.ctx.fillStyle = 'rgba(0, 100, 100, 0.3)';
+        for (let x = 0; x < this.canvas.width; x += 60) {
+            const height = 80 + Math.sin(x / 100) * 30;
+            this.ctx.fillRect(x, this.canvas.height - 50 - height, 50, height);
+        }
+        
+        // Subtle grid overlay for retro feel
+        this.ctx.strokeStyle = 'rgba(0, 255, 0, 0.05)';
+        this.ctx.lineWidth = 1;
         for (let x = 0; x < this.canvas.width; x += 40) {
             this.ctx.beginPath();
             this.ctx.moveTo(x, 0);
             this.ctx.lineTo(x, this.canvas.height);
             this.ctx.stroke();
         }
-        
-        // Horizontal lines
         for (let y = 0; y < this.canvas.height; y += 40) {
             this.ctx.beginPath();
             this.ctx.moveTo(0, y);
             this.ctx.lineTo(this.canvas.width, y);
             this.ctx.stroke();
+        }
+    }
+    
+    drawPlayer() {
+        const x = this.player.x;
+        const y = this.player.y;
+        const w = this.player.width;
+        const h = this.player.height;
+        
+        // Jump trail effect
+        if (!this.player.onGround) {
+            this.ctx.fillStyle = 'rgba(0, 255, 255, 0.3)';
+            this.ctx.fillRect(x + w/4, y + h, w/2, 3);
+        }
+        
+        // Draw retro character (pixel art style)
+        // Body (main color)
+        this.ctx.fillStyle = '#00ff00';
+        this.ctx.fillRect(x + 4, y + 4, w - 8, h - 8);
+        
+        // Head
+        this.ctx.fillStyle = '#00ffff';
+        this.ctx.fillRect(x + 6, y + 2, w - 12, 6);
+        
+        // Eyes
+        this.ctx.fillStyle = '#000';
+        this.ctx.fillRect(x + 8, y + 4, 2, 2);
+        this.ctx.fillRect(x + w - 10, y + 4, 2, 2);
+        
+        // Legs
+        this.ctx.fillStyle = '#00cc00';
+        this.ctx.fillRect(x + 6, y + h - 6, 3, 4);
+        this.ctx.fillRect(x + w - 9, y + h - 6, 3, 4);
+        
+        // Arms (animated based on movement)
+        if (Math.abs(this.player.vx) > 0.5) {
+            const armOffset = Math.sin(this.gameTime / 100) * 2;
+            this.ctx.fillRect(x + 2, y + 8 + armOffset, 3, 4);
+            this.ctx.fillRect(x + w - 5, y + 8 - armOffset, 3, 4);
+        } else {
+            this.ctx.fillRect(x + 2, y + 8, 3, 4);
+            this.ctx.fillRect(x + w - 5, y + 8, 3, 4);
+        }
+        
+        // Outline for pixel art effect
+        this.ctx.strokeStyle = this.player.onGround ? '#00ffff' : '#ffffff';
+        this.ctx.lineWidth = 1;
+        this.ctx.strokeRect(x + 4, y + 4, w - 8, h - 8);
+        
+        // Glow effect when jumping
+        if (!this.player.onGround) {
+            this.ctx.shadowColor = '#00ffff';
+            this.ctx.shadowBlur = 10;
+            this.ctx.strokeRect(x + 4, y + 4, w - 8, h - 8);
+            this.ctx.shadowBlur = 0;
         }
     }
     
@@ -872,6 +901,142 @@ class AITimeArcade {
         this.ctx.shadowBlur = 10;
         this.ctx.fillText(text, this.canvas.width / 2, y);
         this.ctx.shadowBlur = 0;
+    }
+    
+    drawObstacle(obstacle) {
+        const x = obstacle.x;
+        const y = obstacle.y;
+        const w = obstacle.width;
+        const h = obstacle.height;
+        
+        // Draw retro enemy/hazard
+        // Main body (spiky enemy)
+        this.ctx.fillStyle = '#ff0000';
+        this.ctx.fillRect(x + 2, y + 2, w - 4, h - 4);
+        
+        // Spikes on top
+        this.ctx.fillStyle = '#ff6600';
+        for (let i = 0; i < w; i += 4) {
+            this.ctx.fillRect(x + i, y, 3, 4);
+        }
+        
+        // Eyes
+        this.ctx.fillStyle = '#ffff00';
+        this.ctx.fillRect(x + 6, y + 8, 3, 3);
+        this.ctx.fillRect(x + w - 9, y + 8, 3, 3);
+        
+        // Evil pupils
+        this.ctx.fillStyle = '#000';
+        this.ctx.fillRect(x + 7, y + 9, 1, 1);
+        this.ctx.fillRect(x + w - 8, y + 9, 1, 1);
+        
+        // Animated mouth (opens/closes)
+        if (Math.floor(this.gameTime / 300) % 2 === 0) {
+            this.ctx.fillStyle = '#000';
+            this.ctx.fillRect(x + w/2 - 2, y + h - 8, 4, 2);
+        }
+        
+        // Outline
+        this.ctx.strokeStyle = '#ff6600';
+        this.ctx.lineWidth = 1;
+        this.ctx.strokeRect(x + 2, y + 2, w - 4, h - 4);
+        
+        // Danger glow
+        this.ctx.shadowColor = '#ff0000';
+        this.ctx.shadowBlur = 5;
+        this.ctx.strokeRect(x + 2, y + 2, w - 4, h - 4);
+        this.ctx.shadowBlur = 0;
+    }
+    
+    drawCollectible(collectible) {
+        const x = collectible.x;
+        const y = collectible.y;
+        const w = collectible.width;
+        const h = collectible.height;
+        
+        this.ctx.save();
+        this.ctx.translate(x + w/2, y + h/2);
+        this.ctx.rotate(collectible.rotation);
+        
+        // Draw spinning coin
+        // Outer ring (gold)
+        this.ctx.fillStyle = '#ffff00';
+        this.ctx.beginPath();
+        this.ctx.arc(0, 0, w/2, 0, Math.PI * 2);
+        this.ctx.fill();
+        
+        // Inner ring (darker gold)
+        this.ctx.fillStyle = '#ffcc00';
+        this.ctx.beginPath();
+        this.ctx.arc(0, 0, w/2 - 2, 0, Math.PI * 2);
+        this.ctx.fill();
+        
+        // Center symbol (star or diamond)
+        this.ctx.fillStyle = '#ffffff';
+        this.ctx.beginPath();
+        for (let i = 0; i < 4; i++) {
+            const angle = (i * Math.PI) / 2;
+            const px = Math.cos(angle) * 4;
+            const py = Math.sin(angle) * 4;
+            if (i === 0) this.ctx.moveTo(px, py);
+            else this.ctx.lineTo(px, py);
+        }
+        this.ctx.closePath();
+        this.ctx.fill();
+        
+        // Sparkle effect
+        const sparkleTime = this.gameTime / 100;
+        this.ctx.fillStyle = '#ffffff';
+        this.ctx.fillRect(-1 + Math.sin(sparkleTime) * 2, -8, 2, 2);
+        this.ctx.fillRect(8, -1 + Math.cos(sparkleTime) * 2, 2, 2);
+        this.ctx.fillRect(-1 - Math.sin(sparkleTime) * 2, 8, 2, 2);
+        this.ctx.fillRect(-8, -1 - Math.cos(sparkleTime) * 2, 2, 2);
+        
+        // Glow effect
+        this.ctx.shadowColor = '#ffff00';
+        this.ctx.shadowBlur = 15;
+        this.ctx.beginPath();
+        this.ctx.arc(0, 0, w/2, 0, Math.PI * 2);
+        this.ctx.stroke();
+        this.ctx.shadowBlur = 0;
+        
+        this.ctx.restore();
+    }
+    
+    drawGround() {
+        const groundY = this.canvas.height - 50;
+        
+        // Main ground platform
+        this.ctx.fillStyle = '#00aa00';
+        this.ctx.fillRect(0, groundY, this.canvas.width, 50);
+        
+        // Grass texture on top
+        this.ctx.fillStyle = '#00ff00';
+        this.ctx.fillRect(0, groundY, this.canvas.width, 8);
+        
+        // Grass blades
+        for (let x = 0; x < this.canvas.width; x += 8) {
+            this.ctx.fillStyle = '#00ff00';
+            this.ctx.fillRect(x + 2, groundY - 2, 2, 4);
+            this.ctx.fillRect(x + 5, groundY - 3, 2, 5);
+        }
+        
+        // Underground blocks pattern
+        for (let x = 0; x < this.canvas.width; x += 25) {
+            for (let y = groundY + 10; y < this.canvas.height; y += 20) {
+                this.ctx.strokeStyle = '#008800';
+                this.ctx.lineWidth = 1;
+                this.ctx.strokeRect(x, y, 20, 15);
+            }
+        }
+        
+        // Ground outline
+        this.ctx.strokeStyle = '#00ff00';
+        this.ctx.lineWidth = 2;
+        this.ctx.beginPath();
+        this.ctx.moveTo(0, groundY);
+        this.ctx.lineTo(this.canvas.width, groundY);
+        this.ctx.stroke();
     }
     
     gameLoop(currentTime = 0) {
