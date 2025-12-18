@@ -9,7 +9,7 @@ class AITimeArcade {
             speed: 1.5, // Slower speed
             obstacleFrequency: 0.01, // Fewer obstacles
             gravity: 0.4, // Lighter gravity
-            jumpPower: 20, // Higher jump
+            jumpPower: 12, // Reasonable jump height
             controlSensitivity: 1
         };
         
@@ -260,6 +260,12 @@ class AITimeArcade {
             this.player.onGround = true;
         }
         
+        // Ceiling boundary - prevent going too high
+        if (this.player.y < 0) {
+            this.player.y = 0;
+            this.player.vy = 0; // Stop upward movement
+        }
+        
         // Screen boundaries
         if (this.player.x < 0) this.player.x = 0;
         if (this.player.x + this.player.width > this.canvas.width) {
@@ -333,8 +339,8 @@ class AITimeArcade {
         // Spawn collectibles - More frequent and easier to reach
         if (Math.random() < 0.015) { // Much more frequent
             const groundY = this.canvas.height - 50;
-            const maxJumpHeight = 120; // Easier jump height
-            const collectibleY = groundY - Math.random() * maxJumpHeight - 20; // Lower minimum height
+            const maxJumpHeight = 80; // Match reduced jump capability
+            const collectibleY = groundY - Math.random() * maxJumpHeight - 15; // Lower minimum height
             
             this.collectibles.push({
                 x: this.canvas.width,
@@ -717,6 +723,20 @@ class AITimeArcade {
         // Draw grid background
         this.drawGrid();
         
+        // Draw jump height indicator (subtle guide line)
+        if (this.gameState === 'playing') {
+            const groundY = this.canvas.height - 50;
+            const maxJumpY = groundY - 100; // Show max jump reach
+            this.ctx.strokeStyle = 'rgba(0, 255, 255, 0.1)';
+            this.ctx.lineWidth = 1;
+            this.ctx.setLineDash([5, 5]);
+            this.ctx.beginPath();
+            this.ctx.moveTo(0, maxJumpY);
+            this.ctx.lineTo(this.canvas.width, maxJumpY);
+            this.ctx.stroke();
+            this.ctx.setLineDash([]);
+        }
+        
         // Draw particles
         for (const particle of this.particles) {
             this.ctx.fillStyle = particle.color;
@@ -761,10 +781,18 @@ class AITimeArcade {
         
         // Draw player with jump trail effect
         if (!this.player.onGround) {
-            // Draw jump trail
-            this.ctx.fillStyle = 'rgba(0, 255, 255, 0.3)';
-            this.ctx.fillRect(this.player.x - 5, this.player.y + this.player.height, 
-                            this.player.width + 10, 3);
+            // Draw jump trail - more visible
+            this.ctx.fillStyle = 'rgba(0, 255, 255, 0.5)';
+            this.ctx.fillRect(this.player.x - 3, this.player.y + this.player.height, 
+                            this.player.width + 6, 2);
+            
+            // Draw jump arc indicator
+            this.ctx.strokeStyle = 'rgba(0, 255, 255, 0.3)';
+            this.ctx.lineWidth = 1;
+            this.ctx.beginPath();
+            this.ctx.arc(this.player.x + this.player.width/2, this.player.y + this.player.height/2, 
+                        25, 0, Math.PI * 2);
+            this.ctx.stroke();
         }
         
         this.ctx.fillStyle = this.player.color;
