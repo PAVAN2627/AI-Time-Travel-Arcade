@@ -16,12 +16,12 @@ class AITimeArcade {
         // Game parameters (AI will modify these) - Made much easier
         this.gameParams = { ...this.defaultParams };
         
-        // Player object (Mario-style character)
+        // Player object (Mario-style character with better proportions)
         this.player = {
             x: 100,
             y: 400,
-            width: 24,
-            height: 32,
+            width: 28,
+            height: 36,
             vx: 0,
             vy: 0,
             onGround: false,
@@ -405,6 +405,9 @@ class AITimeArcade {
                 
                 // Visual feedback for collection
                 this.showCollectionEffect(collectible.x, collectible.y);
+                
+                // Temporary power-up effect on character
+                this.player.powerUpTime = this.gameTime + 1000; // 1 second glow
             }
         }
     }
@@ -870,46 +873,132 @@ class AITimeArcade {
             this.ctx.fillRect(x + w/4, y + h, w/2, 3);
         }
         
-        // Draw retro character (pixel art style)
-        // Body (main color)
-        this.ctx.fillStyle = '#00ff00';
-        this.ctx.fillRect(x + 4, y + 4, w - 8, h - 8);
+        // Draw Mario-style character with better proportions
         
-        // Head
-        this.ctx.fillStyle = '#00ffff';
-        this.ctx.fillRect(x + 6, y + 2, w - 12, 6);
+        // Hat/Cap (red)
+        this.ctx.fillStyle = '#ff0000';
+        this.ctx.fillRect(x + 4, y + 2, w - 8, 6);
+        this.ctx.fillRect(x + 2, y + 4, w - 4, 4);
         
-        // Eyes
+        // Face/Head (peach/skin color)
+        this.ctx.fillStyle = '#ffcc99';
+        this.ctx.fillRect(x + 6, y + 8, w - 12, 8);
+        
+        // Eyes (black dots) - different expressions based on state
         this.ctx.fillStyle = '#000';
-        this.ctx.fillRect(x + 8, y + 4, 2, 2);
-        this.ctx.fillRect(x + w - 10, y + 4, 2, 2);
-        
-        // Legs
-        this.ctx.fillStyle = '#00cc00';
-        this.ctx.fillRect(x + 6, y + h - 6, 3, 4);
-        this.ctx.fillRect(x + w - 9, y + h - 6, 3, 4);
-        
-        // Arms (animated based on movement)
-        if (Math.abs(this.player.vx) > 0.5) {
-            const armOffset = Math.sin(this.gameTime / 100) * 2;
-            this.ctx.fillRect(x + 2, y + 8 + armOffset, 3, 4);
-            this.ctx.fillRect(x + w - 5, y + 8 - armOffset, 3, 4);
+        if (this.player.vy < -5) {
+            // Surprised eyes when jumping high
+            this.ctx.fillRect(x + 8, y + 9, 2, 3);
+            this.ctx.fillRect(x + w - 10, y + 9, 2, 3);
+        } else if (Math.abs(this.player.vx) > 2) {
+            // Determined eyes when running fast
+            this.ctx.fillRect(x + 8, y + 11, 2, 1);
+            this.ctx.fillRect(x + w - 10, y + 11, 2, 1);
         } else {
-            this.ctx.fillRect(x + 2, y + 8, 3, 4);
-            this.ctx.fillRect(x + w - 5, y + 8, 3, 4);
+            // Normal eyes
+            this.ctx.fillRect(x + 8, y + 10, 2, 2);
+            this.ctx.fillRect(x + w - 10, y + 10, 2, 2);
         }
         
-        // Outline for pixel art effect
-        this.ctx.strokeStyle = this.player.onGround ? '#00ffff' : '#ffffff';
+        // Nose (small pink dot)
+        this.ctx.fillStyle = '#ff9999';
+        this.ctx.fillRect(x + w/2, y + 12, 1, 1);
+        
+        // Mustache (brown)
+        this.ctx.fillStyle = '#8B4513';
+        this.ctx.fillRect(x + 7, y + 13, w - 14, 2);
+        
+        // Shirt/Body (blue)
+        this.ctx.fillStyle = '#0066ff';
+        this.ctx.fillRect(x + 5, y + 16, w - 10, 8);
+        
+        // Overalls/Suspenders (darker blue)
+        this.ctx.fillStyle = '#003399';
+        this.ctx.fillRect(x + 7, y + 16, 2, 8);
+        this.ctx.fillRect(x + w - 9, y + 16, 2, 8);
+        this.ctx.fillRect(x + 6, y + 18, w - 12, 2);
+        
+        // Belt (brown)
+        this.ctx.fillStyle = '#8B4513';
+        this.ctx.fillRect(x + 5, y + 22, w - 10, 2);
+        
+        // Pants (brown/tan)
+        this.ctx.fillStyle = '#D2691E';
+        this.ctx.fillRect(x + 6, y + 24, w - 12, 4);
+        
+        // Legs with walking animation
+        this.ctx.fillStyle = '#ffcc99';
+        if (Math.abs(this.player.vx) > 0.5) {
+            // Walking animation
+            const walkCycle = Math.floor(this.gameTime / 150) % 2;
+            if (walkCycle === 0) {
+                this.ctx.fillRect(x + 7, y + 28, 3, 4);
+                this.ctx.fillRect(x + w - 10, y + 29, 3, 3);
+            } else {
+                this.ctx.fillRect(x + 7, y + 29, 3, 3);
+                this.ctx.fillRect(x + w - 10, y + 28, 3, 4);
+            }
+        } else {
+            // Standing still
+            this.ctx.fillRect(x + 7, y + 28, 3, 4);
+            this.ctx.fillRect(x + w - 10, y + 28, 3, 4);
+        }
+        
+        // Shoes (black)
+        this.ctx.fillStyle = '#000';
+        this.ctx.fillRect(x + 5, y + h - 2, 5, 2);
+        this.ctx.fillRect(x + w - 10, y + h - 2, 5, 2);
+        
+        // Arms (animated based on movement)
+        this.ctx.fillStyle = '#ffcc99';
+        if (Math.abs(this.player.vx) > 0.5) {
+            const armOffset = Math.sin(this.gameTime / 100) * 2;
+            // Left arm
+            this.ctx.fillRect(x + 2, y + 18 + armOffset, 3, 6);
+            // Right arm  
+            this.ctx.fillRect(x + w - 5, y + 18 - armOffset, 3, 6);
+            
+            // Hands (small squares)
+            this.ctx.fillStyle = '#ffcc99';
+            this.ctx.fillRect(x + 1, y + 22 + armOffset, 2, 2);
+            this.ctx.fillRect(x + w - 3, y + 22 - armOffset, 2, 2);
+        } else {
+            // Arms at rest
+            this.ctx.fillRect(x + 2, y + 18, 3, 6);
+            this.ctx.fillRect(x + w - 5, y + 18, 3, 6);
+            
+            // Hands
+            this.ctx.fillRect(x + 1, y + 22, 2, 2);
+            this.ctx.fillRect(x + w - 3, y + 22, 2, 2);
+        }
+        
+        // Character outline for pixel art effect
+        this.ctx.strokeStyle = this.player.onGround ? '#ffffff' : '#ffff00';
         this.ctx.lineWidth = 1;
-        this.ctx.strokeRect(x + 4, y + 4, w - 8, h - 8);
+        this.ctx.strokeRect(x + 2, y + 2, w - 4, h - 4);
+        
+        // Power-up glow effect after collecting coins
+        if (this.player.powerUpTime && this.gameTime < this.player.powerUpTime) {
+            this.ctx.shadowColor = '#ffff00';
+            this.ctx.shadowBlur = 15;
+            this.ctx.strokeStyle = '#ffff00';
+            this.ctx.lineWidth = 2;
+            this.ctx.strokeRect(x + 1, y + 1, w - 2, h - 2);
+            this.ctx.shadowBlur = 0;
+        }
         
         // Glow effect when jumping
-        if (!this.player.onGround) {
+        else if (!this.player.onGround) {
             this.ctx.shadowColor = '#00ffff';
-            this.ctx.shadowBlur = 10;
-            this.ctx.strokeRect(x + 4, y + 4, w - 8, h - 8);
+            this.ctx.shadowBlur = 8;
+            this.ctx.strokeRect(x + 2, y + 2, w - 4, h - 4);
             this.ctx.shadowBlur = 0;
+        }
+        
+        // Add a cape effect when moving fast
+        if (Math.abs(this.player.vx) > 2) {
+            this.ctx.fillStyle = 'rgba(255, 0, 0, 0.6)';
+            this.ctx.fillRect(x - 3, y + 16, 2, 8);
         }
     }
     
