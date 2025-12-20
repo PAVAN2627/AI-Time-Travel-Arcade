@@ -122,6 +122,12 @@ class AITimeArcade {
 
 ## Deployment Configuration
 
+### Live Demo
+- **URL:** https://ai-time-travel-arcade.netlify.app/
+- **Status:** Production ready and fully functional
+- **Performance:** Optimized for 60 FPS on all devices
+- **Compatibility:** Desktop and mobile browsers
+
 ### Netlify Setup
 ```toml
 [build]

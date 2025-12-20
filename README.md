@@ -2,7 +2,7 @@
 
 **Week 4 Challenge Winner: Retro Revival with Modern AI**
 
-[![Live Demo](https://img.shields.io/badge/🎮_Play_Now-Live_Demo-00ff00?style=for-the-badge)](https://ai-time-arcade.netlify.app)
+[![Live Demo](https://img.shields.io/badge/🎮_Play_Now-Live_Demo-00ff00?style=for-the-badge)](https://ai-time-travel-arcade.netlify.app/)
 [![GitHub](https://img.shields.io/badge/📂_Source-GitHub-181717?style=for-the-badge&logo=github)](https://github.com/PAVAN2627/AI-Time-Travel-Arcade)
 
 > *Experience the perfect fusion of 80s arcade nostalgia and cutting-edge AI technology. Watch as the game learns your play style and adapts in real-time to create a unique challenge just for you!*
@@ -87,7 +87,7 @@ if (multipleErrors) {
 ## 🚀 **Quick Start**
 
 ### **Play Instantly**
-1. **🌐 [Open Live Demo](https://ai-time-arcade.netlify.app)**
+1. **🌐 [Open Live Demo](https://ai-time-travel-arcade.netlify.app/)**
 2. **🎮 Click "START GAME"**
 3. **⌨️ Desktop:** Arrow keys + Spacebar | **📱 Mobile:** Touch buttons
 4. **🤖 Watch AI adapt** to your gameplay in real-time!
@@ -250,7 +250,7 @@ AI-Time-Travel-Arcade/
 ## 🚀 **Deployment Information**
 
 ### **Live Demo**
-- **URL:** [https://ai-time-arcade.netlify.app](https://ai-time-arcade.netlify.app)
+- **URL:** [https://ai-time-travel-arcade.netlify.app/](https://ai-time-travel-arcade.netlify.app/)
 - **Platform:** Netlify (free tier)
 - **Performance:** Global CDN, instant loading
 - **Compatibility:** All modern browsers and mobile devices
@@ -285,7 +285,7 @@ AI-Time-Travel-Arcade/
 
 **Experience AI-powered retro gaming that adapts to YOU!**
 
-[![Play Now](https://img.shields.io/badge/🎮_PLAY_NOW-Live_Demo-00ff00?style=for-the-badge&logo=gamepad)](https://ai-time-arcade.netlify.app)
+[![Play Now](https://img.shields.io/badge/🎮_PLAY_NOW-Live_Demo-00ff00?style=for-the-badge&logo=gamepad)](https://ai-time-travel-arcade.netlify.app/)
 
 *Watch as the AI learns your play style and creates the perfect challenge level just for you!* ✨
 

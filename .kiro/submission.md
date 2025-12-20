@@ -7,7 +7,7 @@
 - **Theme:** Retro Revival
 - **Developer:** Pavan Mali
 - **Repository:** https://github.com/PAVAN2627/AI-Time-Travel-Arcade
-- **Live Demo:** [Deploy on Netlify]
+- **Live Demo:** https://ai-time-travel-arcade.netlify.app/
 
 ## Challenge Requirements Met
 
