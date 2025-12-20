@@ -259,15 +259,17 @@ body {
 .mobile-gamepad {
     display: none;
     flex-direction: column;
-    gap: 10px;
+    gap: 15px;
     margin: 20px auto;
-    max-width: 300px;
+    width: 100%; /* Full width for better spacing */
+    max-width: 400px;
 }
 
 .mobile-row {
     display: flex;
     gap: 10px;
-    justify-content: center;
+    justify-content: space-between; /* Spread buttons apart */
+    width: 100%;
 }
 
 .mobile-btn {
@@ -340,6 +342,15 @@ body {
     
     .mobile-gamepad {
         display: flex;
+        width: 100%;
+        max-width: none;
+        margin: 15px 0;
+        gap: 15px;
+    }
+    
+    .mobile-row:last-child {
+        justify-content: space-between; /* Left and right buttons at corners */
+        padding: 0 30px; /* Push buttons to edges */
     }
     
     .title {
@@ -440,8 +451,9 @@ body {
     }
     
     .mobile-btn {
-        padding: 12px 20px;
-        font-size: 1rem;
+        padding: 15px 30px;
+        font-size: 1.2rem;
+        min-width: 90px;
     }
 }
 
