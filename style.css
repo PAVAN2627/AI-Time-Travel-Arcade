@@ -309,13 +309,13 @@ body {
     margin-top: 15px;
 }
 
-.mobile-only {
-    display: none;
+.desktop-only {
+    display: inline-block;
 }
 
 @media (max-width: 768px) {
-    .mobile-only {
-        display: inline-block;
+    .desktop-only {
+        display: none;
     }
 }
 
@@ -362,6 +362,7 @@ body {
         width: 100%;
         padding: 10px;
         order: 2;
+        display: none; /* Hidden by default on mobile */
     }
     
     .ai-panel h3 {

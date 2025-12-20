@@ -156,19 +156,11 @@ class AITimeArcade {
         
         console.log('📱 Mobile controls initialized');
         
-        // AI Demo button
+        // AI Demo button (desktop only)
         const aiDemoBtn = document.getElementById('aiDemoBtn');
         if (aiDemoBtn) {
             aiDemoBtn.addEventListener('click', () => {
                 this.showAIDemo();
-            });
-        }
-        
-        // Toggle AI panel button (mobile only)
-        const toggleAIBtn = document.getElementById('toggleAIBtn');
-        if (toggleAIBtn) {
-            toggleAIBtn.addEventListener('click', () => {
-                this.toggleAIPanel();
             });
         }
     }
@@ -178,14 +170,18 @@ class AITimeArcade {
         this.resetGame();
         document.getElementById('startBtn').textContent = 'RESTART';
         
-        // Hide AI panel on mobile during gameplay for better view
+        // Always hide AI panel on mobile during gameplay
         if (window.innerWidth <= 768) {
             document.querySelector('.ai-panel').style.display = 'none';
         }
         
         // Show initial AI message with tutorial
-        document.getElementById('aiReason').textContent = '🎮 TUTORIAL: Use controls to move and jump. Collect yellow coins, avoid red enemies!';
-        this.showAINotification('GAME_START', '🔄 Game started! AI adapting to your play style.');
+        document.getElementById('aiReason').textContent = '🎮 Game started! AI is analyzing your gameplay and adapting difficulty.';
+        
+        // Only show notification on desktop
+        if (window.innerWidth > 768) {
+            this.showAINotification('GAME_START', '🔄 Game started! AI adapting to your play style.');
+        }
     }
     
     togglePause() {
@@ -488,7 +484,7 @@ class AITimeArcade {
         document.getElementById('startBtn').textContent = 'START GAME';
         document.getElementById('pauseBtn').textContent = 'PAUSE';
         
-        // Show AI panel again on mobile
+        // Show AI panel ONLY after game over on mobile
         if (window.innerWidth <= 768) {
             document.querySelector('.ai-panel').style.display = 'block';
         }
@@ -497,14 +493,18 @@ class AITimeArcade {
         if (this.score > this.highScore) {
             this.highScore = this.score;
             localStorage.setItem('aiArcadeHighScore', this.highScore);
-            this.showAINotification('NEW_RECORD', '🏆 NEW HIGH SCORE! AI is impressed!');
+            
+            // Only show notification on desktop
+            if (window.innerWidth > 768) {
+                this.showAINotification('NEW_RECORD', '🏆 NEW HIGH SCORE! AI is impressed!');
+            }
         }
         
         // AI final analysis
         const finalSurvival = this.aiData.survivalTime / 1000;
-        const finalErrorRate = this.aiData.errorCount / finalSurvival;
+        const finalErrorRate = this.aiData.errorCount / (finalSurvival || 1);
         document.getElementById('aiReason').textContent = 
-            `🎯 FINAL ANALYSIS: ${finalSurvival.toFixed(1)}s survival, ${this.aiData.adaptationHistory.length} AI adaptations made. ${this.score > this.highScore/2 ? 'Great job!' : 'Try again!'}`;
+            `🎯 GAME OVER! Survived ${finalSurvival.toFixed(1)}s, Score: ${this.score}. AI made ${this.aiData.adaptationHistory.length} adaptations. ${this.score > this.highScore/2 ? 'Great job!' : 'Try again!'}`;
     }
     
   
@@ -657,6 +657,9 @@ class AITimeArcade {
     }
     
     showAINotification(adaptation, reason) {
+        // Don't show notifications on mobile for cleaner experience
+        if (window.innerWidth <= 768) return;
+        
         // Create floating notification
         const notification = document.createElement('div');
         notification.className = 'ai-notification';
@@ -686,10 +689,12 @@ class AITimeArcade {
         
         // Flash the AI panel
         const aiPanel = document.querySelector('.ai-panel');
-        aiPanel.style.boxShadow = '0 0 30px rgba(0, 255, 0, 0.8)';
-        setTimeout(() => {
-            aiPanel.style.boxShadow = '0 0 15px rgba(0, 255, 0, 0.2)';
-        }, 1000);
+        if (aiPanel.style.display !== 'none') {
+            aiPanel.style.boxShadow = '0 0 30px rgba(0, 255, 0, 0.8)';
+            setTimeout(() => {
+                aiPanel.style.boxShadow = '0 0 15px rgba(0, 255, 0, 0.2)';
+            }, 1000);
+        }
     }
     
     updateParameterBars() {
@@ -744,19 +749,6 @@ class AITimeArcade {
             }
         };
         showNext();
-    }
-    
-    toggleAIPanel() {
-        const aiPanel = document.querySelector('.ai-panel');
-        const toggleBtn = document.getElementById('toggleAIBtn');
-        
-        if (aiPanel.style.display === 'none') {
-            aiPanel.style.display = 'block';
-            toggleBtn.textContent = 'HIDE AI';
-        } else {
-            aiPanel.style.display = 'none';
-            toggleBtn.textContent = 'SHOW AI';
-        }
     }
     
     updateUI() {
